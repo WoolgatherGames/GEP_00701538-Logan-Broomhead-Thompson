@@ -4,9 +4,9 @@ using UnityEngine;
 using UnityEngine.UI;
 
 [RequireComponent(typeof(Image))]
-public class Prototype_KeyboardKey : MonoBehaviour
+public class HM_KeyboardKey : MonoBehaviour
 {
-    private Prototype_HackingManager _hackingManager;
+    private HM_HackingManager _hackingManager;
 
     [SerializeField] KeyCode thisKey;
 
@@ -20,7 +20,7 @@ public class Prototype_KeyboardKey : MonoBehaviour
     {
         myImage = this.gameObject.GetComponent<Image>();
         myImage.enabled = false;
-        _hackingManager = Prototype_HackingManager.instance;
+        _hackingManager = HM_HackingManager.instance;
     }
 
     public void ActivateKey(float time)
