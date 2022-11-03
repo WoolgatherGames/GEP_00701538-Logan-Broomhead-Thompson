@@ -4,62 +4,66 @@ using UnityEngine;
 
 public class SecurityCamera : MonoBehaviour
 {
-    //[SerializeField] float scanDistance;
-    //[SerializeField] float coneDiameter;
-    //[Tooltip("set this to player")]
-    //[SerializeField] LayerMask searchingFor;
     Transform myTransform;
-    [SerializeField] Quaternion fromRotation;
-    [SerializeField] Quaternion toRotation;
     float lerpValue;
-    [Tooltip("If this is equal to 1, it'll take 1 second for the camera to swing")]
-    [SerializeField] float swingingSpeed = 1f;
+    [Tooltip("How far (in degrees) will the camera swing per second. default is 30")]
+    [SerializeField] float swingingSpeed = 30f;
 
     [Tooltip("How long does the camera wait before turning")]
     [SerializeField] float _restTime = 0.5f;
     float restTimer;
 
+    [Tooltip("the rotation that the camera starts at and return too. Make sure this is lower than the to rotation")]
+    [SerializeField] float fromRotationZ;
+    [SerializeField] float toRotationZ;
+    float rotationZ;
+
 
     //[Tooltip("The camera rotate on the Z axis from sweep angle x to sweep angle y. Make sure angle Y is larger than angle X")]
     
     bool swingingForward;
+    bool stopSwinging;
 
     private void Start()
     {
-        lerpValue = 0f;
+        rotationZ = fromRotationZ;
         restTimer = 0f;
         swingingForward = true;
+        stopSwinging = false;
         myTransform = this.GetComponent<Transform>();
     }
 
     private void Update()
     {
-        myTransform.rotation = Quaternion.Lerp(toRotation, fromRotation, lerpValue);
+        myTransform.eulerAngles = new Vector3(0f, 0f, rotationZ);
 
-        if (swingingForward)
+        if (!stopSwinging)
         {
-            lerpValue += Time.deltaTime * swingingSpeed;
-            if (lerpValue > 1f)
+            if (swingingForward)
             {
-                restTimer += Time.deltaTime;
-                if (restTimer > _restTime)
+                rotationZ += Time.deltaTime * swingingSpeed;
+                if (rotationZ > toRotationZ)
                 {
-                    restTimer = 0f;
-                    swingingForward = false;
+                    stopSwinging = true;
+                }
+            }
+            else
+            {
+                rotationZ -= Time.deltaTime * swingingSpeed;
+                if (rotationZ < fromRotationZ)
+                {
+                    stopSwinging = true;
                 }
             }
         }
         else
         {
-            lerpValue -= Time.deltaTime * swingingSpeed;
-            if (lerpValue < 0f)
+            restTimer += Time.deltaTime;
+            if (restTimer > _restTime)
             {
-                restTimer += Time.deltaTime;
-                if (restTimer > _restTime)
-                {
-                    restTimer = 0f;
-                    swingingForward = true;
-                }
+                restTimer = 0f;
+                swingingForward = !swingingForward;
+                stopSwinging = false;
             }
         }
     }

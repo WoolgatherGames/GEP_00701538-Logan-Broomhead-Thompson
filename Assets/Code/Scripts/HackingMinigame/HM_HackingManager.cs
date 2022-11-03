@@ -50,7 +50,7 @@ public class HM_HackingManager : MonoBehaviour
     private void Start()
     {
         //testing only
-        BeginHack(testDifficulty);
+        //BeginHack(testDifficulty);
     }
 
 
