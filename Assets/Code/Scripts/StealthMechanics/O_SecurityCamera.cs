@@ -2,9 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SecurityCamera : MonoBehaviour
+[RequireComponent(typeof(HM_HackableObject))]
+public class O_SecurityCamera : MonoBehaviour, IInteractables
 {
     Transform myTransform;
+    HM_HackableObject myHackable;
     float lerpValue;
     [Tooltip("How far (in degrees) will the camera swing per second. default is 30")]
     [SerializeField] float swingingSpeed = 30f;
@@ -17,9 +19,6 @@ public class SecurityCamera : MonoBehaviour
     [SerializeField] float fromRotationZ;
     [SerializeField] float toRotationZ;
     float rotationZ;
-
-
-    //[Tooltip("The camera rotate on the Z axis from sweep angle x to sweep angle y. Make sure angle Y is larger than angle X")]
     
     bool swingingForward;
     bool stopSwinging;
@@ -30,7 +29,8 @@ public class SecurityCamera : MonoBehaviour
         restTimer = 0f;
         swingingForward = true;
         stopSwinging = false;
-        myTransform = this.GetComponent<Transform>();
+        myTransform = this.gameObject.GetComponent<Transform>();
+        myHackable = this.gameObject.GetComponent<HM_HackableObject>();
     }
 
     private void Update()
@@ -66,6 +66,12 @@ public class SecurityCamera : MonoBehaviour
                 stopSwinging = false;
             }
         }
+    }
+
+    public void Interact()
+    {
+        Debug.Log("ive been interacted with. whoo");
+        myHackable.HackInteract();
     }
 
 }

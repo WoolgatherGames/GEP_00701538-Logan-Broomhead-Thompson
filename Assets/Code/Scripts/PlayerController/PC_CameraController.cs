@@ -69,8 +69,16 @@ public class PC_CameraController : MonoBehaviour
         //xPos and yPos are a percentage of how far the click was across the screen 
 
         Vector3 clickLocation = thisCamera.ScreenToWorldPoint(new Vector3(xPos * thisCamera.pixelWidth, yPos * thisCamera.pixelHeight, 10f));
-        //Debug.Log(thisCamera.ScreenToWorldPoint(new Vector3(xPos * thisCamera.pixelWidth, yPos * thisCamera.pixelHeight, 10f)));
         Debug.Log(Physics2D.OverlapCircle(clickLocation, 0.1f));
+
+        foreach(Collider2D obj in Physics2D.OverlapCircleAll(clickLocation, 0.1f))
+        {
+            if (obj.gameObject.GetComponent<IInteractables>() != null)
+            {
+                obj.gameObject.GetComponent<IInteractables>().Interact();
+            }
+        }
+
         //oaef so i want to use this to call the hackable object script
         
         /*

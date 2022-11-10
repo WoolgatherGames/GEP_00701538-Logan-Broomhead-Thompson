@@ -5,10 +5,12 @@ using UnityEngine.UI;
 
 public class HM_HackingManager : MonoBehaviour
 {
-    public static HM_HackingManager instance;
+
+    public static HM_HackingManager instance;//no need to bother with the singleton method that creates this into a game object, since if the values for this script arnt set in the inspector, it wont work
     private void Awake()
     {
         instance = this;
+        DontDestroyOnLoad(this.gameObject);
     }
 
 
@@ -53,17 +55,21 @@ public class HM_HackingManager : MonoBehaviour
         //BeginHack(testDifficulty);
     }
 
-
+    //i dont want progress to be updated without also updating the ui, so call UpdateProgress(int) instead
     private int progress;
+    //the timer limit for when the next key spawns (prompts the player to press a specific button) currently its randomised between 0.1 and 0.3 seconds every key spawn
     private float currentTimeBetweenKeySpawns;
     private float keySpawnTimer;
     private float popUpSpawnTimer;
+    //to do: consider adding a maximum number of pop ups. if a player went afk they could impact performance 
     int numberOfPopUpsActive;
     private bool hacking = false;
 
     float progressDecayTimer;
 
-    public void BeginHack(Difficulty difficulty)
+    HM_HackableObject currentHackTarget;
+
+    public void BeginHack(Difficulty difficulty, HM_HackableObject objectBeingHacked)
     {
         _progressRate = difficulty.myProgressRate;
         _timeLimit = difficulty.myTimeLimit;
@@ -80,6 +86,8 @@ public class HM_HackingManager : MonoBehaviour
 
         SetNextPopUpSpawnTimer();
         SetNextKeySpawnTimer();
+
+        currentHackTarget = objectBeingHacked;
 
         hacking = true;
     }
@@ -102,8 +110,14 @@ public class HM_HackingManager : MonoBehaviour
 
     void HackComplete()
     {
+        currentHackTarget.HackCompleted();
         return;
-        //when the hack is complete, do stuff. 
+        //when the hack is complete, do stuff. celebration screen, tell the object its hacked now. ect ect. 
+    }
+
+    void CancelHack()
+    {
+        currentHackTarget = null;
     }
 
     private void Update()
