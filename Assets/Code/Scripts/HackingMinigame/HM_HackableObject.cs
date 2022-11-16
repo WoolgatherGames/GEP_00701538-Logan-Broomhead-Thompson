@@ -33,6 +33,8 @@ public class HM_HackableObject : MonoBehaviour
     {
         //called by the hacking manager when this objects hack was completed. 
         //Call the interact function on the object this is attatched too once the hack is done. 
+
+        HackAlreadyComplete = true;
         this.gameObject.GetComponent<IInteractables>().Interact();
     }
 }

@@ -9,8 +9,14 @@ public class HM_HackingManager : MonoBehaviour
     public static HM_HackingManager instance;//no need to bother with the singleton method that creates this into a game object, since if the values for this script arnt set in the inspector, it wont work
     private void Awake()
     {
-        instance = this;
-        DontDestroyOnLoad(this.gameObject);
+        if (instance != null)
+        {
+            Debug.Log("There are too many copies of HM_HackingManager in the scene, my game object is called: " + this.gameObject.name);
+        }
+        else
+        {
+            instance = this;
+        }
     }
 
 
@@ -48,6 +54,11 @@ public class HM_HackingManager : MonoBehaviour
     private Vector2 _timeBetweenPopUps;
     private int _popUpDecayRate;
 
+    [Header("Animation Components")]
+    [SerializeField] Animator startEndHackAnimator;
+    [SerializeField] Text startEndAnimatedText;
+    [SerializeField] ParticleSystem hackCompleteConfetii;
+
     [SerializeField] Difficulty testDifficulty;
     private void Start()
     {
@@ -67,14 +78,46 @@ public class HM_HackingManager : MonoBehaviour
 
     float progressDecayTimer;
 
+    Difficulty currentDifficulty;
     HM_HackableObject currentHackTarget;
 
+    HM_HackableObject currentObjectBeingHacked;
     public void BeginHack(Difficulty difficulty, HM_HackableObject objectBeingHacked)
     {
-        _progressRate = difficulty.myProgressRate;
-        _timeLimit = difficulty.myTimeLimit;
-        _timeBetweenPopUps = difficulty.myTimeBetweenPopUps;
-        _popUpDecayRate = difficulty.myPopUpDecay;
+        progress = 0;
+        currentDifficulty = difficulty;
+        currentHackTarget = objectBeingHacked;
+
+        BeginHackPartOne();
+    }
+
+    void BeginHackPartOne()
+    {
+        //Debug.Log("Animation begin");
+        startEndAnimatedText.gameObject.SetActive(true);
+        startEndAnimatedText.text = "Begin Hack";
+        startEndHackAnimator.SetTrigger("TriggerTextAnim");
+
+        //BeginHackPartTwo();
+        StartCoroutine(WaitBetweenBeginHackParts());
+
+    }
+    IEnumerator WaitBetweenBeginHackParts()
+    {
+        yield return new WaitForSeconds(1f);//make sure this as about as long as the animation takes place or slightly 
+        startEndAnimatedText.gameObject.SetActive(false);
+        BeginHackPartTwo();
+        //StopCoroutine(WaitBetweenBeginHackParts());
+    }
+
+    //void BeginHackPartTwo(Difficulty difficulty, HM_HackableObject objectBeingHacked)
+    void BeginHackPartTwo()
+    {
+        Debug.Log("Ive been called");//For some reason, begin hack part two is getting called when the animation text plays after the hack complete. This is causing a bug because currentDifficulty is set to null. This is happening the EXACT frame that the animation ends...
+        _progressRate = currentDifficulty.myProgressRate;
+        _timeLimit = currentDifficulty.myTimeLimit;
+        _timeBetweenPopUps = currentDifficulty.myTimeBetweenPopUps;
+        _popUpDecayRate = currentDifficulty.myPopUpDecay;
 
 
         HackingParent.SetActive(true);
@@ -87,10 +130,10 @@ public class HM_HackingManager : MonoBehaviour
         SetNextPopUpSpawnTimer();
         SetNextKeySpawnTimer();
 
-        currentHackTarget = objectBeingHacked;
-
         hacking = true;
+        Debug.Log("Start hack");
     }
+
 
     void UpdateProgress(int progressIncrease)
     {
@@ -110,13 +153,27 @@ public class HM_HackingManager : MonoBehaviour
 
     void HackComplete()
     {
+        hacking = false;
+
         currentHackTarget.HackCompleted();
+        currentDifficulty = null;
+        currentHackTarget = null;
+
+        //oaef delete ALL pop ups
+
+        startEndAnimatedText.gameObject.SetActive(true);
+        startEndAnimatedText.text = "Hack Succesful";
+        startEndHackAnimator.SetTrigger("TriggerTextAnim");
+        hackCompleteConfetii.Play();
+
         return;
         //when the hack is complete, do stuff. celebration screen, tell the object its hacked now. ect ect. 
     }
 
     void CancelHack()
     {
+        hacking = false;
+        currentDifficulty = null;
         currentHackTarget = null;
     }
 

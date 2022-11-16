@@ -7,6 +7,15 @@ public class O_SecurityCamera : MonoBehaviour, IInteractables
 {
     Transform myTransform;
     HM_HackableObject myHackable;
+
+    /*[Tooltip("This should be the game object with the SM_DetectionField script attached")]
+    [SerializeField] GameObject detectionGameObject;
+    [Tooltip("This is the game object that visually represents the detection fields field of view")]
+    [SerializeField] GameObject visualiser;*/
+
+    [Tooltip("A parent gameobject that contains all the objects attatched to the camera that should toggle on/off when the camera is turned on/off. The SM_detectionField and visualiser should be children of this object")]
+    [SerializeField] GameObject toggleableObjectsParent;
+
     float lerpValue;
     [Tooltip("How far (in degrees) will the camera swing per second. default is 30")]
     [SerializeField] float swingingSpeed = 30f;
@@ -23,8 +32,11 @@ public class O_SecurityCamera : MonoBehaviour, IInteractables
     bool swingingForward;
     bool stopSwinging;
 
+    bool securityCameraOn;
+
     private void Start()
     {
+        securityCameraOn = true;
         rotationZ = fromRotationZ;
         restTimer = 0f;
         swingingForward = true;
@@ -35,6 +47,9 @@ public class O_SecurityCamera : MonoBehaviour, IInteractables
 
     private void Update()
     {
+        if (!securityCameraOn)
+            return;
+
         myTransform.eulerAngles = new Vector3(0f, 0f, rotationZ);
 
         if (!stopSwinging)
@@ -70,8 +85,32 @@ public class O_SecurityCamera : MonoBehaviour, IInteractables
 
     public void Interact()
     {
-        Debug.Log("ive been interacted with. whoo");
-        myHackable.HackInteract();
+        //Debug.Log("ive been interacted with. whoo");
+
+        if (myHackable.HackInteract())
+        {
+            //If HackInteract returns true, it means the object has already been hacked, so we can perform this objects functionality
+
+            ToggleCameraOnOff();
+        }
+        else
+            return;//HackInteract returns false if the object hasnt been hacked yet
+
+    }
+
+
+    void ToggleCameraOnOff()
+    {
+        securityCameraOn = !securityCameraOn;
+
+        if (securityCameraOn)
+        {
+            toggleableObjectsParent.SetActive(true);
+        }
+        else
+        {
+            toggleableObjectsParent.SetActive(false);
+        }
     }
 
 }
