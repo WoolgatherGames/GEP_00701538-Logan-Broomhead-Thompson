@@ -107,7 +107,6 @@ public class HM_HackingManager : MonoBehaviour
         yield return new WaitForSeconds(1f);//make sure this as about as long as the animation takes place or slightly 
         startEndAnimatedText.gameObject.SetActive(false);
         BeginHackPartTwo();
-        //StopCoroutine(WaitBetweenBeginHackParts());
     }
 
     //void BeginHackPartTwo(Difficulty difficulty, HM_HackableObject objectBeingHacked)

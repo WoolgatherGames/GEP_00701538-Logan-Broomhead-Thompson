@@ -29,6 +29,7 @@ public class SM_PatrollingGuard : MonoBehaviour
     Rigidbody2D rb;
     float rotationGoal;
 
+    [SerializeField] Transform emptyTransform;//rotate this to the desired location and then rotate towards it. it should be sat EXACTLY ontop of the guard. 
 
     void Start()
     {
@@ -57,10 +58,14 @@ public class SM_PatrollingGuard : MonoBehaviour
         else
             currentPatrol -= 1;
 
+
+        //note to self: LookAt doesnt seem to work in 2d
         nextLocation = patrolLocations[currentPatrol];
         Vector3 currentRotation = myTransform.eulerAngles;
         myTransform.LookAt(nextLocation, Vector3.forward);
+        //emptyTransform.LookAt(nextLocation, Vector3.forward);
         rotationGoal = myTransform.eulerAngles.z;
+        //rotationGoal = emptyTransform.eulerAngles.z;
         myTransform.eulerAngles = currentRotation;
 
         rotating = true;
@@ -83,13 +88,27 @@ public class SM_PatrollingGuard : MonoBehaviour
         }*/
         if (rotating)
         {
-            float rotationZ = myTransform.eulerAngles.z + (Time.deltaTime * 10f);
-            myTransform.eulerAngles = new Vector3(0f, 0f, rotationZ);
-            if (myTransform.eulerAngles.z > rotationGoal)
+            if (rotationGoal > myTransform.eulerAngles.z)
             {
-                myTransform.eulerAngles = new Vector3(0f, 0f, rotationGoal);
-                rotating = false;
+                float rotationZ = myTransform.eulerAngles.z + (Time.deltaTime * 45f);
+                myTransform.eulerAngles = new Vector3(0f, 0f, rotationZ);
+                if (myTransform.eulerAngles.z >= rotationGoal)
+                {
+                    myTransform.eulerAngles = new Vector3(0f, 0f, rotationGoal);
+                    rotating = false;
+                }
             }
+            else
+            {
+                float rotationZ = myTransform.eulerAngles.z - (Time.deltaTime * 45f);
+                myTransform.eulerAngles = new Vector3(0f, 0f, rotationZ);
+                if (myTransform.eulerAngles.z <= rotationGoal)
+                {
+                    myTransform.eulerAngles = new Vector3(0f, 0f, rotationGoal);
+                    rotating = false;
+                }
+            }
+
         }
         else
         {
