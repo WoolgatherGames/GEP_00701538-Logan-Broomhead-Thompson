@@ -29,7 +29,9 @@ public class SM_PatrollingGuard : MonoBehaviour
     Rigidbody2D rb;
     float rotationGoal;
 
-    [SerializeField] Transform emptyTransform;//rotate this to the desired location and then rotate towards it. it should be sat EXACTLY ontop of the guard. 
+    //[SerializeField] Transform emptyTransform;//rotate this to the desired location and then rotate towards it. it should be sat EXACTLY ontop of the guard. 
+
+    bool rotateRight;//If true, the guard will rotate rightways, if false the guard will rotate leftways (whilst in rotating mode only)
 
     void Start()
     {
@@ -42,7 +44,14 @@ public class SM_PatrollingGuard : MonoBehaviour
         headingUpPatrolRoute = true;
         currentPatrol = 1;
         nextLocation = patrolLocations[currentPatrol];
-        myTransform.LookAt(nextLocation, Vector3.forward);
+
+        //myTransform.LookAt(nextLocation, Vector3.forward);
+        //https://answers.unity.com/questions/1023987/lookat-only-on-z-axis.html found this online as a replacement to LookAt() for 2d. 
+        Vector3 differenceBetweenLocations = nextLocation - myTransform.position;
+        //rotationGoal = Mathf.Atan2(differenceBetweenLocations.y, differenceBetweenLocations.x) * Mathf.Rad2Deg;
+        float newRot = Mathf.Atan2(differenceBetweenLocations.x, differenceBetweenLocations.y) * Mathf.Rad2Deg;
+        myTransform.rotation = Quaternion.Euler(0f, 0f, newRot);
+
         rotating = false;
     }
 
@@ -61,12 +70,23 @@ public class SM_PatrollingGuard : MonoBehaviour
 
         //note to self: LookAt doesnt seem to work in 2d
         nextLocation = patrolLocations[currentPatrol];
-        Vector3 currentRotation = myTransform.eulerAngles;
-        myTransform.LookAt(nextLocation, Vector3.forward);
+
+        //Vector3 currentRotation = myTransform.eulerAngles;
+        //myTransform.LookAt(nextLocation, Vector3.forward);
         //emptyTransform.LookAt(nextLocation, Vector3.forward);
-        rotationGoal = myTransform.eulerAngles.z;
+        //rotationGoal = myTransform.eulerAngles.z;
         //rotationGoal = emptyTransform.eulerAngles.z;
-        myTransform.eulerAngles = currentRotation;
+        //myTransform.eulerAngles = currentRotation;
+
+        //found this code online, that should work as a LookAt function for 2D
+        Vector3 differenceBetweenLocations = nextLocation - myTransform.position;
+        rotationGoal = Mathf.Atan2(differenceBetweenLocations.x, differenceBetweenLocations.y) * Mathf.Rad2Deg;//This needs to be in euler angles. Euler angles work 0-360. This works -180 to 180 (i think.) So whenever the angle goal is negative, this wont work
+        rotationGoal += 180f;//So I thought this would be a good solution (because if the angle is -180 in degree's. I thought itd be 0 in euler angles. but its actually 180 in euler angles
+
+        /*if (rotationGoal > myTransform.eulerAngles.z)
+            rotateRight = true;
+        else
+            rotateRight = false;*/
 
         rotating = true;
         Debug.Log("I am prepared for the next patrol at " + nextLocation + " at the rotation " + rotationGoal);
@@ -86,6 +106,11 @@ public class SM_PatrollingGuard : MonoBehaviour
 
                 break;
         }*/
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            Debug.Log("my rotation is: " + myTransform.eulerAngles.z);
+        }
+
         if (rotating)
         {
             if (rotationGoal > myTransform.eulerAngles.z)
@@ -97,8 +122,10 @@ public class SM_PatrollingGuard : MonoBehaviour
                     myTransform.eulerAngles = new Vector3(0f, 0f, rotationGoal);
                     rotating = false;
                 }
+
+                //Debug.Log("my rotation is: " + myTransform.eulerAngles.z);
             }
-            else
+            else if (rotationGoal < myTransform.eulerAngles.z)
             {
                 float rotationZ = myTransform.eulerAngles.z - (Time.deltaTime * 45f);
                 myTransform.eulerAngles = new Vector3(0f, 0f, rotationZ);
@@ -107,11 +134,22 @@ public class SM_PatrollingGuard : MonoBehaviour
                     myTransform.eulerAngles = new Vector3(0f, 0f, rotationGoal);
                     rotating = false;
                 }
+
+                //Debug.Log("my rotation is: " + myTransform.eulerAngles.z);
+            }
+            else if (rotationGoal == myTransform.eulerAngles.z)
+            {
+                myTransform.eulerAngles = new Vector3(0f, 0f, rotationGoal);
+                rotating = false;
             }
 
         }
         else
         {
+            //the following line is for testing ONLY
+            myTransform.position = nextLocation;
+
+
             PrepareForNextPatrol();
             return;
         }
