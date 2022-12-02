@@ -54,6 +54,8 @@ public class HM_HackingManager : MonoBehaviour
     private Vector2 _timeBetweenPopUps;
     private int _popUpDecayRate;
 
+    private float hackTimer;
+
     [Header("Animation Components")]
     [SerializeField] Animator startEndHackAnimator;
     [SerializeField] Text startEndAnimatedText;
@@ -62,8 +64,7 @@ public class HM_HackingManager : MonoBehaviour
     [SerializeField] Difficulty testDifficulty;
     private void Start()
     {
-        //testing only
-        //BeginHack(testDifficulty);
+        startEndAnimatedText.gameObject.SetActive(false);
     }
 
     //i dont want progress to be updated without also updating the ui, so call UpdateProgress(int) instead
@@ -84,9 +85,14 @@ public class HM_HackingManager : MonoBehaviour
     HM_HackableObject currentObjectBeingHacked;
     public void BeginHack(Difficulty difficulty, HM_HackableObject objectBeingHacked)
     {
+        hacking = false;//just incase a previous hack is active, we need to reset it! this will stop the hack from continuing. 
+
         progress = 0;
+        hackTimer = 0f;
         currentDifficulty = difficulty;
         currentHackTarget = objectBeingHacked;
+
+        timeLimitText.text = difficulty.myTimeLimit.ToString().Substring(0, 3);
 
         BeginHackPartOne();
     }
@@ -112,7 +118,6 @@ public class HM_HackingManager : MonoBehaviour
     //void BeginHackPartTwo(Difficulty difficulty, HM_HackableObject objectBeingHacked)
     void BeginHackPartTwo()
     {
-        Debug.Log("Ive been called");//For some reason, begin hack part two is getting called when the animation text plays after the hack complete. This is causing a bug because currentDifficulty is set to null. This is happening the EXACT frame that the animation ends...
         _progressRate = currentDifficulty.myProgressRate;
         _timeLimit = currentDifficulty.myTimeLimit;
         _timeBetweenPopUps = currentDifficulty.myTimeBetweenPopUps;
@@ -152,13 +157,20 @@ public class HM_HackingManager : MonoBehaviour
 
     void HackComplete()
     {
+        if (hacking == false)
+            return;
+        
         hacking = false;
 
         currentHackTarget.HackCompleted();
         currentDifficulty = null;
         currentHackTarget = null;
 
-        //oaef delete ALL pop ups
+        //delete ALL pop ups that are still active
+        foreach (Transform child in popUpParent.transform)
+        {
+            Destroy(child.gameObject);
+        }
 
         startEndAnimatedText.gameObject.SetActive(true);
         startEndAnimatedText.text = "Hack Succesful";
@@ -171,6 +183,7 @@ public class HM_HackingManager : MonoBehaviour
 
     void CancelHack()
     {
+        //add in a button that lets the player cancel the hack. or the escape key does it
         hacking = false;
         currentDifficulty = null;
         currentHackTarget = null;
@@ -180,6 +193,14 @@ public class HM_HackingManager : MonoBehaviour
     {
         if (hacking)
         {
+            hackTimer += Time.deltaTime;
+            timeLimitText.text = (_timeLimit - hackTimer).ToString().Substring(0, 3);
+            if (hackTimer > _timeLimit)
+            {
+                //you've run out of time. OAEF
+            }
+
+
             //enabling the keys on a timer
             keySpawnTimer += Time.deltaTime;
             if (keySpawnTimer > currentTimeBetweenKeySpawns)

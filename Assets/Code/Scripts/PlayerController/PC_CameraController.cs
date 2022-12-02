@@ -73,7 +73,7 @@ public class PC_CameraController : MonoBehaviour
 
         foreach(Collider2D obj in Physics2D.OverlapCircleAll(clickLocation, 0.1f))
         {
-            if (obj.gameObject.GetComponent<IInteractables>() != null)
+            if (obj.gameObject.GetComponent<IInteractables>() != null)//IInteractables is anything that can be clicked. 
             {
                 obj.gameObject.GetComponent<IInteractables>().Interact();
             }

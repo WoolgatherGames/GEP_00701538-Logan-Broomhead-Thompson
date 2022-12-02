@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d462d5780ff342f4e9c6f85c2edfc8e7, type: 3}
-  m_Name: TestDifficulty
+  m_Name: SecurityCameraTypeA
   m_EditorClassIdentifier: 
-  myProgressRate: {x: 30, y: 50}
+  myProgressRate: {x: 4, y: 9}
   myTimeLimit: 10
-  myTimeBetweenPopUps: {x: 1, y: 2}
+  myTimeBetweenPopUps: {x: 1, y: 3}
   myPopUpDecay: 1

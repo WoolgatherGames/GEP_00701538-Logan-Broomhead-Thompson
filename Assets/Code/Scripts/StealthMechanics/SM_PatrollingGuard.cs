@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class SM_PatrollingGuard : MonoBehaviour
 {
+    //bug: I had a guard not go into the movement state after rotating exactly 180 degrees. I fixed it by slightly offsetting the angle so its not 180 exactly. 
     public enum Behaviours
     {
         patrolRotate,//the guard rotates to face their next patrol location
@@ -110,7 +111,7 @@ public class SM_PatrollingGuard : MonoBehaviour
     {
         //walk a speed value per second, towards the location goal
 
-        float movementSpeed = 3f;
+        float movementSpeed = 2.2f;//the guards movement speed should be SLIGHTLY faster than the players
 
         float distance = Vector3.Distance(myTransform.position, nextLocation);//Calculate how far the guard is from theyre destination
         if (distance < movementSpeed * Time.deltaTime)
