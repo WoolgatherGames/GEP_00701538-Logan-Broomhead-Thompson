@@ -13,4 +13,6 @@ public class Difficulty : ScriptableObject
     public Vector2 myTimeBetweenPopUps = new Vector2(2f, 4f);
     [Tooltip("How much progress the player loses per second based on the number of active pop ups")]
     public int myPopUpDecay = 4;
+    [Tooltip("How many points is completing this hack worth at the end of the level")]
+    public float pointValue;
 }

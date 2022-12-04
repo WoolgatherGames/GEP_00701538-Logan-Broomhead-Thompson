@@ -53,6 +53,7 @@ public class HM_HackingManager : MonoBehaviour
     private float _timeLimit;
     private Vector2 _timeBetweenPopUps;
     private int _popUpDecayRate;
+    private float _scoreValue;
 
     private float hackTimer;
 
@@ -86,13 +87,18 @@ public class HM_HackingManager : MonoBehaviour
     public void BeginHack(Difficulty difficulty, HM_HackableObject objectBeingHacked)
     {
         hacking = false;//just incase a previous hack is active, we need to reset it! this will stop the hack from continuing. 
+        GameManager.instance.BeginHack();
+
 
         progress = 0;
         hackTimer = 0f;
         currentDifficulty = difficulty;
         currentHackTarget = objectBeingHacked;
 
-        timeLimitText.text = difficulty.myTimeLimit.ToString().Substring(0, 3);
+        if (difficulty.myTimeLimit.ToString().Length > 4)
+            timeLimitText.text = difficulty.myTimeLimit.ToString().Substring(0, 4);
+        else
+            timeLimitText.text = difficulty.myTimeLimit.ToString();
 
         BeginHackPartOne();
     }
@@ -122,6 +128,7 @@ public class HM_HackingManager : MonoBehaviour
         _timeLimit = currentDifficulty.myTimeLimit;
         _timeBetweenPopUps = currentDifficulty.myTimeBetweenPopUps;
         _popUpDecayRate = currentDifficulty.myPopUpDecay;
+        _scoreValue = currentDifficulty.pointValue;
 
 
         HackingParent.SetActive(true);
@@ -154,23 +161,30 @@ public class HM_HackingManager : MonoBehaviour
         progressSlider.fillAmount = progress / 100f;
         progressText.text = (progress.ToString() + "%");
     }
+    
+    void RemovePopUps()
+    {
+        //delete ALL pop ups that are still active
+        foreach (Transform child in popUpParent.transform)
+        {
+            Destroy(child.gameObject);
+        }
+    }
 
     void HackComplete()
     {
+        GameManager.instance.EndHack(_scoreValue);
+
         if (hacking == false)
             return;
-        
+
         hacking = false;
 
         currentHackTarget.HackCompleted();
         currentDifficulty = null;
         currentHackTarget = null;
 
-        //delete ALL pop ups that are still active
-        foreach (Transform child in popUpParent.transform)
-        {
-            Destroy(child.gameObject);
-        }
+        RemovePopUps();
 
         startEndAnimatedText.gameObject.SetActive(true);
         startEndAnimatedText.text = "Hack Succesful";
@@ -184,9 +198,35 @@ public class HM_HackingManager : MonoBehaviour
     void CancelHack()
     {
         //add in a button that lets the player cancel the hack. or the escape key does it
+
+        GameManager.instance.EndHack(0f);
         hacking = false;
         currentDifficulty = null;
         currentHackTarget = null;
+        RemovePopUps();
+    }
+
+    void FailedHack()
+    {
+        GameManager.instance.EndHack(0f);
+        hacking = false;
+        currentDifficulty = null;
+        currentHackTarget = null;
+
+        RemovePopUps();
+
+        //to do: add in an animation to tell the player they failed. unsure if the language should be soft like "try again" or if it should lean into the aesthetics of B-movie hacking like "Firewall Breach Failed"
+        startEndAnimatedText.gameObject.SetActive(true);
+        startEndAnimatedText.text = "Firewall Breach Failed";
+        startEndHackAnimator.SetTrigger("TriggerTextAnim");
+
+
+    }
+
+    IEnumerator CloseFailedHackText()
+    {
+        yield return new WaitForSeconds(1f);
+        startEndAnimatedText.gameObject.SetActive(false);
     }
 
     private void Update()
@@ -194,10 +234,15 @@ public class HM_HackingManager : MonoBehaviour
         if (hacking)
         {
             hackTimer += Time.deltaTime;
-            timeLimitText.text = (_timeLimit - hackTimer).ToString().Substring(0, 3);
+            float timeRemaining = _timeLimit - hackTimer;
+            if (timeRemaining.ToString().Length > 4)
+                timeLimitText.text = timeRemaining.ToString().Substring(0, 4);//to do: a more ideal solution would be to split between the comma and get 1 digit after the comma
+            else
+                timeLimitText.text = timeRemaining.ToString();
+
             if (hackTimer > _timeLimit)
             {
-                //you've run out of time. OAEF
+                FailedHack();
             }
 
 
@@ -224,6 +269,11 @@ public class HM_HackingManager : MonoBehaviour
             {
                 SpawnPopUp();
                 SetNextPopUpSpawnTimer();
+            }
+
+            if (Input.GetKeyDown(KeyCode.Escape))
+            {
+                CancelHack();//if the player presses escape, cancel the hack so they can move again. 
             }
 
         }

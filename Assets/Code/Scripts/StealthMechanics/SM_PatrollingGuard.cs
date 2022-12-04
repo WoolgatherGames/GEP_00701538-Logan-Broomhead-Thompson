@@ -98,7 +98,7 @@ public class SM_PatrollingGuard : MonoBehaviour
 
     void RotationState()
     {
-        float rotationSpeed = 45f;//whilst these values (and the similar one in WalkState() could be editable through the inspector, I want all the guards to move and rotate at the same speed
+        float rotationSpeed = 120f;//whilst these values (and the similar one in WalkState() could be editable through the inspector, I want all the guards to move and rotate at the same speed
         myTransform.rotation = Quaternion.RotateTowards(myTransform.rotation, Quaternion.Euler(0f, 0f, rotationGoal), rotationSpeed * Time.deltaTime);
         if (myTransform.localEulerAngles.z >= rotationGoal - 3f && myTransform.localEulerAngles.z <= rotationGoal + 3f)//im getting from a range of values here because i wasnt confident in the values matching up exactly. Im not sure if this precaution is actually needed though
         {
@@ -111,7 +111,7 @@ public class SM_PatrollingGuard : MonoBehaviour
     {
         //walk a speed value per second, towards the location goal
 
-        float movementSpeed = 2.2f;//the guards movement speed should be SLIGHTLY faster than the players
+        float movementSpeed = 2.8f;//the guards movement speed should be SLIGHTLY faster than the players
 
         float distance = Vector3.Distance(myTransform.position, nextLocation);//Calculate how far the guard is from theyre destination
         if (distance < movementSpeed * Time.deltaTime)

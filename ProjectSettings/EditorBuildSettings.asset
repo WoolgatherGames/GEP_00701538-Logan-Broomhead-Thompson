@@ -5,7 +5,13 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/SampleScene.unity
     guid: 2cda990e2423bbf4892e6590ba056729
+  - enabled: 1
+    path: Assets/Scenes/StealthLevel1.unity
+    guid: 71abc713fae60ec498e089d433bfe505
+  - enabled: 1
+    path: Assets/Scenes/HackingScreen.unity
+    guid: 57716b71a2b5d1041aa20c064b9a640a
   m_configObjects: {}

@@ -10,10 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d462d5780ff342f4e9c6f85c2edfc8e7, type: 3}
-  m_Name: SecurityCameraTypeA
+  m_Name: SecurityCameraQuickHack
   m_EditorClassIdentifier: 
-  myProgressRate: {x: 5, y: 9}
-  myTimeLimit: 15
-  myTimeBetweenPopUps: {x: 1.5, y: 3}
-  myPopUpDecay: 3
-  pointValue: 11
+  myProgressRate: {x: 18, y: 28}
+  myTimeLimit: 5
+  myTimeBetweenPopUps: {x: 2, y: 4}
+  myPopUpDecay: 5
+  pointValue: 2

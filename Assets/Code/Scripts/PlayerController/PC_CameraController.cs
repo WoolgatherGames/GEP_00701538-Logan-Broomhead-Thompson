@@ -13,7 +13,7 @@ public class PC_CameraController : MonoBehaviour
     [SerializeField] Transform playerBody;
 
     [Tooltip("How far the camera can move left/right or up/down based on the mouse position (if the camera is at the edge of the screen, itll look the furthest")]
-    [SerializeField] Vector2 cameraMaximumOffset;
+    [SerializeField] Vector2 cameraMaximumOffset;//IMPORTANT NOTE: one part in level 1 REQUIRES the minimum offset along the X axis to be atleast 3.2 (from the start of the level, head right at the first turn. theres a camera that requires you to go to a small room nearby and hack from there.) I currently have it set to 3.4
 
     [SerializeField] Vector2 screenBoundsX;
     [SerializeField] Vector2 screenBoundsY;

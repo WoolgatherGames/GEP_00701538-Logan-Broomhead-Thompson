@@ -73,10 +73,11 @@ public class SM_DetectionField : MonoBehaviour
         if (playerInTrigger)
         {
             triggerTimer += Time.deltaTime;
-            if (triggerTimer > 0.15f)
+            if (triggerTimer > 0.25f)
             {
                 //game over;
                 Debug.Log("Game over. Player found!");
+                GameManager.instance.GameOver();
             }
         }
         else
