@@ -44,6 +44,9 @@ public class GameManager : MonoBehaviour
 
     [SerializeField] private GameObject GameOverPanel;
 
+    [SerializeField] Vector3 playerStartingLocation;
+    private Vector3 playerRespawnLocation;
+
     private void Start()
     {
         ExitDoorSpriteAndCollider.SetActive(true);
@@ -52,6 +55,7 @@ public class GameManager : MonoBehaviour
         EnablePlayerMovement();
 
         playerTime = 0f;
+        playerRespawnLocation = playerStartingLocation;
     }
 
     private void Update()
@@ -120,5 +124,26 @@ public class GameManager : MonoBehaviour
         //called by the restart button in the game over panel
         Scene currentScene = SceneManager.GetActiveScene();
         SceneManager.LoadScene(currentScene.name);
+    }
+
+    public void RespawnPlayer()
+    {
+        //respawn the player from the last save location they where at, take some points away
+        playerScore -= 5f;
+        playerController.transform.position = playerRespawnLocation;
+
+        StartCoroutine(RespawnPlayerWaitFrame());
+
+    }
+    IEnumerator RespawnPlayerWaitFrame()
+    {
+        yield return null;//wait a single frame because the players position needs to be reset so the detection field script doesnt immediatly game over you again. 
+        GameOverPanel.SetActive(false);
+        EnablePlayerMovement();
+    }
+
+    public void SetRespawnLocation(Vector3 spawnPosition)
+    {
+        playerRespawnLocation = spawnPosition;
     }
 }

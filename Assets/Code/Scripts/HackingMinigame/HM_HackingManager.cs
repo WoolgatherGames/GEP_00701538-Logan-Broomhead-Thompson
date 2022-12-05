@@ -92,6 +92,7 @@ public class HM_HackingManager : MonoBehaviour
 
         progress = 0;
         hackTimer = 0f;
+        numberOfPopUpsActive = 0;
         currentDifficulty = difficulty;
         currentHackTarget = objectBeingHacked;
 
@@ -293,6 +294,7 @@ public class HM_HackingManager : MonoBehaviour
         Vector3 spawnPos = new Vector3(xPos, yPos, 0f);
 
         int popUpNumber = Random.Range(0, popUpPrefabs.Length);
+        Debug.Log(popUpNumber);
 
         Instantiate(popUpPrefabs[popUpNumber], spawnPos, Quaternion.identity, popUpParent.transform);
 

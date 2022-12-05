@@ -5441,6 +5441,8 @@ MonoBehaviour:
   popUpBoundsY: {x: 0.7, y: 2.4}
   popUpPrefabs:
   - {fileID: 4216585242232357162, guid: 965612ad05b445e429086d95b7aec916, type: 3}
+  - {fileID: 3304768075463101682, guid: 95771afb92f741b4996d1e7698ced494, type: 3}
+  - {fileID: 2012414076055945202, guid: cae72d6fcd59af940a25786966a0f1d1, type: 3}
   HackingParent: {fileID: 1764187859}
   progressSlider: {fileID: 1337628375}
   progressText: {fileID: 1930864382}

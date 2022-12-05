@@ -54,7 +54,8 @@ public class SM_DetectionField : MonoBehaviour
         if (!actuallyScan)
             return;
 
-        int timesPlayerHasBeenFoundThisFrame = 0;
+        //To detect when the player is inside the detection field, I count how many times they've been seen this frame. Origonally, I had a bool that was set to true or false based on if the raycast saw the player or not. but this meant that only the last raycast actually mattered. Whoops
+        int timesPlayerHasBeenFoundThisFrame = 0;//if the player is found atleast once this frame then I want to run the bit of code for when the player is being seen by the detection field
         for (int x = -detectionRadius; x < detectionRadius; x++)
         {
             this.transform.localEulerAngles = new Vector3(0f, 0f, x + 90f);
@@ -64,7 +65,23 @@ public class SM_DetectionField : MonoBehaviour
                 if (hit.collider.tag == "Player")
                     timesPlayerHasBeenFoundThisFrame += 1;
         }
-        
+
+        //This is an alternate to the above 10 lines. Unsure if its better for performance to make a temporary bool, but have an additional if statement per loop. OR, if its better to use an integer with one bonus if statement after the loop
+        /*bool playerHasBeenFoundThisFrame = false;//this can be changed to the PlayerInTrigger variable. instead of creating it, just set it to false 
+        for (int x = -detectionRadius; x < detectionRadius; x++)
+        {
+            if (!playerHasBeenFoundThisFrame)
+            {
+                this.transform.localEulerAngles = new Vector3(0f, 0f, x + 90f);
+                RaycastHit2D hit = Physics2D.Raycast(this.transform.position, this.transform.up, detectionRange, detectionMask);
+                Debug.DrawRay(this.transform.position, this.transform.up * detectionRange, Color.red, 0.1f, false);
+                if (hit.collider != null)
+                    if (hit.collider.tag == "Player")
+                        playerHasBeenFoundThisFrame = true;
+            }
+
+        }*/
+
         if (timesPlayerHasBeenFoundThisFrame > 0)
             playerInTrigger = true;
         else
