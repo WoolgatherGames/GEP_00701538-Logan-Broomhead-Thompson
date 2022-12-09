@@ -125,6 +125,7 @@ public class HM_HackingManager : MonoBehaviour
     //void BeginHackPartTwo(Difficulty difficulty, HM_HackableObject objectBeingHacked)
     void BeginHackPartTwo()
     {
+        //set difficulty parameters based on the hackable objects difficulty setting
         _progressRate = currentDifficulty.myProgressRate;
         _timeLimit = currentDifficulty.myTimeLimit;
         _timeBetweenPopUps = currentDifficulty.myTimeBetweenPopUps;
@@ -134,7 +135,7 @@ public class HM_HackingManager : MonoBehaviour
 
         HackingParent.SetActive(true);
 
-
+        //reset player progress so the previous hack doesnt accidently carry over somehow
         progress = 0;
         progressDecayTimer = 1f;
         UpdateProgress(0);
@@ -150,6 +151,7 @@ public class HM_HackingManager : MonoBehaviour
     void UpdateProgress(int progressIncrease)
     {
         //call this function every time the progres changes. It will change the progress for you, and then update the UI
+        //itd be nice to include some sort of sound effect here
         progress += progressIncrease;
         if (progress < 0)
             progress = 0;
@@ -159,22 +161,25 @@ public class HM_HackingManager : MonoBehaviour
             HackComplete();
         }
 
+        //itd be cool to get this animated (coroutine perhaps?)
+        //visually update the player on their current progress. 
         progressSlider.fillAmount = progress / 100f;
         progressText.text = (progress.ToString() + "%");
     }
     
     void RemovePopUps()
     {
-        //delete ALL pop ups that are still active
+        //delete ALL pop ups that are still active (call this when the hack ends for whatever reason)
         foreach (Transform child in popUpParent.transform)
         {
             Destroy(child.gameObject);
         }
+        numberOfPopUpsActive = 0;
     }
 
     void HackComplete()
     {
-        GameManager.instance.EndHack(_scoreValue);
+        GameManager.instance.EndHack(_scoreValue);//give the player some points for completing a hack. This isnt the best way to do a scoring system, im not sure its encouraging different playstyles well enough, or skillful play. for instance, scoring based on the time it took to hack the object. or giving the player points at the end of the level based on time remaining. 
 
         if (hacking == false)
             return;
@@ -216,12 +221,18 @@ public class HM_HackingManager : MonoBehaviour
 
         RemovePopUps();
 
-        //to do: add in an animation to tell the player they failed. unsure if the language should be soft like "try again" or if it should lean into the aesthetics of B-movie hacking like "Firewall Breach Failed"
+        //unsure if the language should be soft like "try again" or if it should lean into the aesthetics of B-movie hacking like "Firewall Breach Failed"
         startEndAnimatedText.gameObject.SetActive(true);
         startEndAnimatedText.text = "Firewall Breach Failed";
         startEndHackAnimator.SetTrigger("TriggerTextAnim");
 
 
+    }
+
+    public void GameOver()
+    {
+        //when the game is over. cancel the players current hack
+        CancelHack();
     }
 
     IEnumerator CloseFailedHackText()

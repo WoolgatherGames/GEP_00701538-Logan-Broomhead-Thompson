@@ -116,7 +116,8 @@ public class GameManager : MonoBehaviour
     public void GameOver()
     {
         //called by the detection field if they player gets spotted. 
-        playerController.DisableMovement();
+        playerController.DisableMovement();//stop the player from moving about
+        HM_HackingManager.instance.GameOver();//stop any hacks that are currently happening from continuing (otherwise the player could complete the hack for free, and then press respawn)
         GameOverPanel.SetActive(true);
     }
     public void Restart()
@@ -129,10 +130,11 @@ public class GameManager : MonoBehaviour
     public void RespawnPlayer()
     {
         //respawn the player from the last save location they where at, take some points away
+        //the gameplay doesnt suit short levels well. so restarting a whole level is...not great. a checkpoint system works far better. 
         playerScore -= 5f;
         playerController.transform.position = playerRespawnLocation;
 
-        StartCoroutine(RespawnPlayerWaitFrame());
+        StartCoroutine(RespawnPlayerWaitFrame());//cant respawn this frame because the detection field would just call "game over" again
 
     }
     IEnumerator RespawnPlayerWaitFrame()
@@ -144,6 +146,7 @@ public class GameManager : MonoBehaviour
 
     public void SetRespawnLocation(Vector3 spawnPosition)
     {
+        //place respawn locations in different parts of the map where i want the player to return to if they ever get caught. 
         playerRespawnLocation = spawnPosition;
     }
 }

@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 public class HM_HackableObject : MonoBehaviour
 {
-    [SerializeField] Difficulty hackingDifficulty;
-    bool HackAlreadyComplete;
+    //attatch this to anything in the screen that can be hacked. (Security cameras)
+    [SerializeField] Difficulty hackingDifficulty;//the difficulty setting of hackable objects is stored inside scriptable objects
+    bool HackAlreadyComplete;//if the hack has already been done, the player retains control of the object 
 
     private void Start()
     {
